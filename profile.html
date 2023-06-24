@@ -6,122 +6,109 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Profile</title>
-  <style>body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-  }
-  
-  .navbar h2 {
-    margin: 0;
-  }
-  
-  .navbar-right {
-    float: right;
-  }
-  
-  .main {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-  }
-  
-  #profileSection {
-    margin-bottom: 20px;
-  }
-  
-  h2 {
-    margin-top: 0;
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  
-  input[type="text"],
-  input[type="number"],
-  input[type="tel"],
-  textarea {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  .alert {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-  }
-  
-  .alert-success {
-    background-color: #dff0d8;
-    color: #3c763d;
-  }
-  
-  .alert-error {
-    background-color: #f2dede;
-    color: #a94442;
-  }
-  .navbar {
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-.navbar h2 {
-  margin: 0;
-}
+    .navbar {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.navbar-right {
-  display: flex;
-  align-items: center;
-}
+    .navbar h2 {
+      margin: 0;
+    }
 
-#logoutButton {
-  background-color: #4CAF50;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+    .navbar-right {
+      display: flex;
+      align-items: center;
+    }
 
-#logoutButton:hover {
-  background-color: #45a049;
-}
+    #logoutButton {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
+    #logoutButton:hover {
+      background-color: #45a049;
+    }
+
+    .main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+
+    #profileSection {
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .alert {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .alert-success {
+      background-color: #dff0d8;
+      color: #3c763d;
+    }
+
+    .alert-error {
+      background-color: #f2dede;
+      color: #a94442;
+    }
   </style>
 </head>
 
 <body>
   <div class="navbar">
     <h2>User Profile</h2>
-    <div class="navbar-right"></div>
+    <div class="navbar-right">
       <button id="logoutButton">Logout</button>
     </div>
   </div>
@@ -160,7 +147,7 @@
   <script type="text/javascript">
     // Your Firebase configuration
     var firebaseConfig = {
-        apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+      apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
     authDomain: "covidapp-9f88d.firebaseapp.com",
     databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
     projectId: "covidapp-9f88d",
@@ -180,69 +167,44 @@
     var profileAadharInput = document.getElementById("profileAadharInput");
     var profileAddressInput = document.getElementById("profileAddressInput");
 
-    // Check if user is logged in
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        // User is logged in
-        loadUserProfile();
-
-        // Add event listener to logout button
-        var logoutButton = document.getElementById("logoutButton");
-        logoutButton.addEventListener("click", logoutUser);
-
-        // Add event listener to home button
-        var homeButton = document.getElementById("homeButton");
-        homeButton.addEventListener("click", function() {
-          window.location.href = 'index.html'; // Redirect to the home page
-        });
-
-        // Add event listener to profile update button
-        var profileUpdateButton = document.getElementById("profileUpdateButton");
-        profileUpdateButton.addEventListener("click", updateProfile);
-      } else {
-        // User is not logged in
-        window.location.href = 'login.html'; // Redirect to the login page
-      }
-    });
-
+    // Load user profile and populate the input fields
     function loadUserProfile() {
-  var userId = firebase.auth().currentUser.uid;
-  var userRef = database.ref("users/" + userId);
-
-  userRef.once("value").then(function(snapshot) {
-    var profile = snapshot.val();
-
-    if (profile) {
-      profileNameInput.value = profile.name || "";
-      profileAgeInput.value = profile.age || "";
-      profilePhoneInput.value = profile.phone || "";
-      profileAadharInput.value = profile.aadhar || "";
-      profileAddressInput.value = profile.address || "";
+      var user = firebase.auth().currentUser;
+      if (user) {
+        var userProfileRef = database.ref("users/" + user.uid);
+        userProfileRef.once("value").then(function(snapshot) {
+          var userProfile = snapshot.val();
+          if (userProfile) {
+            profileNameInput.value = userProfile.name || "";
+            profileAgeInput.value = userProfile.age || "";
+            profilePhoneInput.value = userProfile.phone || "";
+            profileAadharInput.value = userProfile.aadhar || "";
+            profileAddressInput.value = userProfile.address || "";
+          }
+        });
+      }
     }
-  });
-}
-
 
     // Update user profile in the database
     function updateProfile() {
-      var userId = firebase.auth().currentUser.uid;
-      var userRef = database.ref("users/" + userId);
-
-      var profile = {
-        name: profileNameInput.value,
-        age: profileAgeInput.value,
-        phone: profilePhoneInput.value,
-        aadhar: profileAadharInput.value,
-        address: profileAddressInput.value
-      };
-
-      userRef.update(profile)
-        .then(function() {
-          alert("Profile updated successfully!");
-        })
-        .catch(function(error) {
-          alert("Error updating profile: " + error.message);
-        });
+      var user = firebase.auth().currentUser;
+      if (user) {
+        var userProfileRef = database.ref("users/" + user.uid);
+        var profileData = {
+          name: profileNameInput.value.trim(),
+          age: parseInt(profileAgeInput.value.trim()),
+          phone: profilePhoneInput.value.trim(),
+          aadhar: profileAadharInput.value.trim(),
+          address: profileAddressInput.value.trim()
+        };
+        userProfileRef.update(profileData)
+          .then(function() {
+            alert("Profile updated successfully!");
+          })
+          .catch(function(error) {
+            alert("Error updating profile: " + error.message);
+          });
+      }
     }
 
     // Logout the user
@@ -254,6 +216,23 @@
         alert("Error logging out: " + error.message);
       });
     }
+
+    // Add event listener to the profile update button
+    document.getElementById("profileUpdateButton").addEventListener("click", updateProfile);
+
+    // Check if user is logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is logged in
+        loadUserProfile();
+
+        // Add event listener to logout button
+        document.getElementById("logoutButton").addEventListener("click", logoutUser);
+      } else {
+        // User is not logged in
+        window.location.href = 'login.html'; // Redirect to the login page
+      }
+    });
   </script>
 </body>
 
