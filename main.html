@@ -9,6 +9,7 @@
     <div class="buttons">
       <button id="signupButton">Signup</button>
       <button id="loginButton">Login</button>
+      <button id="adminLoginButton">Admin Login</button> <!-- New admin login button -->
     </div>
   </div>
 
@@ -19,9 +20,8 @@
         <p>"India is set to defeat Covid-19. Every Indian is making it possible."</p>
         <p>- PM Narendra Modi</p>
         <p>Search Your Nearest Vaccination Center</p>
-           <p> Get a preview list of the nearest centers and check availability of vaccination slots</p>
-            
-            <p>Login to book your slot</p>
+        <p>Get a preview list of the nearest centers and check availability of vaccination slots</p>
+        <p>Login to book your slot</p>
       </div>
       <div class="image-container">
         <img src="https://www.cowin.gov.in/assets/images/independance.svg">
@@ -38,6 +38,11 @@
     document.getElementById('loginButton').addEventListener('click', function() {
       // Redirect to login page
       window.location.href = 'login.html';
+    });
+
+    document.getElementById('adminLoginButton').addEventListener('click', function() {
+      // Redirect to admin login page
+      window.location.href = 'adminlogin.html';
     });
   </script>
 </body>
