@@ -275,7 +275,7 @@ searchButton.addEventListener("click", loadCenters);
           var booking = childSnapshot.val();
 
           var listItem = document.createElement("li");
-          listItem.textContent = "Booking ID: " + bookingId + ", Center ID: " + booking.centerId + ", Date: " + booking.dateBooked;
+          listItem.textContent = "The booking with ID "+bookingId.substring(1, 5)+" is associated with the center ID "+booking.centerId+" and was booked on "+booking.dateBooked;
 
           var cancelButton = document.createElement("button");
           cancelButton.textContent = "Cancel";
@@ -298,54 +298,6 @@ var profilePhoneInput = document.getElementById("profilePhoneInput");
 var profileAadharInput = document.getElementById("profileAadharInput");
 var profileAddressInput = document.getElementById("profileAddressInput");
 
-profileButton.addEventListener("click", function() {
-  profileSection.classList.toggle("hidden");
-  loadUserProfile(); // Load user profile when the profile section is shown
-});
-
-profileUpdateButton.addEventListener("click", function() {
-  updateProfile();
-});
-
-// Load user profile
-function loadUserProfile() {
-  var user = firebase.auth().currentUser;
-  if (user) {
-    var userProfileRef = database.ref("users/" + user.uid);
-    userProfileRef.once("value").then(function(snapshot) {
-      var userProfile = snapshot.val();
-      if (userProfile) {
-        profileNameInput.value = userProfile.name || "";
-        profileAgeInput.value = userProfile.age || "";
-        profilePhoneInput.value = userProfile.phone || "";
-        profileAadharInput.value = userProfile.aadhar || "";
-        profileAddressInput.value = userProfile.address || "";
-      }
-    });
-  }
-}
-
-// Update user profile
-function updateProfile() {
-  var user = firebase.auth().currentUser;
-  if (user) {
-    var userProfileRef = database.ref("users/" + user.uid);
-    var profileData = {
-      name: profileNameInput.value.trim(),
-      age: parseInt(profileAgeInput.value.trim()),
-      phone: profilePhoneInput.value.trim(),
-      aadhar: profileAadharInput.value.trim(),
-      address: profileAddressInput.value.trim()
-    };
-    userProfileRef.update(profileData)
-      .then(function() {
-        console.log("Profile updated successfully!");
-      })
-      .catch(function(error) {
-        console.error("Error updating profile:", error);
-      });
-  }
-}
 
   </script>
 </body>
