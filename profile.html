@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <style>body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+  
+  .navbar h2 {
+    margin: 0;
+  }
+  
+  .navbar-right {
+    float: right;
+  }
+  
+  .main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+  
+  #profileSection {
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  .alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  .alert-success {
+    background-color: #dff0d8;
+    color: #3c763d;
+  }
+  
+  .alert-error {
+    background-color: #f2dede;
+    color: #a94442;
+  }
+  .navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+#logoutButton {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#logoutButton:hover {
+  background-color: #45a049;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <h2>User Profile</h2>
+    <div class="navbar-right"></div>
+      <button id="logoutButton">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="profileSection">
+      <h2>Profile Details</h2>
+      <div>
+        <label for="profileNameInput">Name:</label>
+        <input type="text" id="profileNameInput" />
+      </div>
+      <div>
+        <label for="profileAgeInput">Age:</label>
+        <input type="number" id="profileAgeInput" />
+      </div>
+      <div>
+        <label for="profilePhoneInput">Phone:</label>
+        <input type="tel" id="profilePhoneInput" />
+      </div>
+      <div>
+        <label for="profileAadharInput">Aadhar:</label>
+        <input type="text" id="profileAadharInput" />
+      </div>
+      <div>
+        <label for="profileAddressInput">Address:</label>
+        <textarea id="profileAddressInput"></textarea>
+      </div>
+      <button id="profileUpdateButton">Update Profile</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script>
+
+  <script type="text/javascript">
+    // Your Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    var database = firebase.database();
+    var profileNameInput = document.getElementById("profileNameInput");
+    var profileAgeInput = document.getElementById("profileAgeInput");
+    var profilePhoneInput = document.getElementById("profilePhoneInput");
+    var profileAadharInput = document.getElementById("profileAadharInput");
+    var profileAddressInput = document.getElementById("profileAddressInput");
+
+    // Check if user is logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is logged in
+        loadUserProfile();
+
+        // Add event listener to logout button
+        var logoutButton = document.getElementById("logoutButton");
+        logoutButton.addEventListener("click", logoutUser);
+
+        // Add event listener to home button
+        var homeButton = document.getElementById("homeButton");
+        homeButton.addEventListener("click", function() {
+          window.location.href = 'index.html'; // Redirect to the home page
+        });
+
+        // Add event listener to profile update button
+        var profileUpdateButton = document.getElementById("profileUpdateButton");
+        profileUpdateButton.addEventListener("click", updateProfile);
+      } else {
+        // User is not logged in
+        window.location.href = 'login.html'; // Redirect to the login page
+      }
+    });
+
+    // Load user profile and populate the input fields
+    function loadUserProfile() {
+      var userId = firebase.auth().currentUser.uid;
+      var userRef = database.ref("users/" + userId);
+
+      userRef.once("value").then(function(snapshot) {
+        var profile = snapshot.val();
+
+        profileNameInput.value = profile.name || "";
+        profileAgeInput.value = profile.age || "";
+        profilePhoneInput.value = profile.phone || "";
+        profileAadharInput.value = profile.aadhar || "";
+        profileAddressInput.value = profile.address || "";
+      });
+    }
+
+    // Update user profile in the database
+    function updateProfile() {
+      var userId = firebase.auth().currentUser.uid;
+      var userRef = database.ref("users/" + userId);
+
+      var profile = {
+        name: profileNameInput.value,
+        age: profileAgeInput.value,
+        phone: profilePhoneInput.value,
+        aadhar: profileAadharInput.value,
+        address: profileAddressInput.value
+      };
+
+      userRef.update(profile)
+        .then(function() {
+          alert("Profile updated successfully!");
+        })
+        .catch(function(error) {
+          alert("Error updating profile: " + error.message);
+        });
+    }
+
+    // Logout the user
+    function logoutUser() {
+      firebase.auth().signOut().then(function() {
+        // User is logged out
+        window.location.href = 'login.html'; // Redirect to the login page
+      }).catch(function(error) {
+        alert("Error logging out: " + error.message);
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="usdash.css">
+  <title>Vaccination Center Booking</title>
+</head>
+
+<body>
+  <div class="navbar">
+    <h2>Vaccination Center Booking</h2>
+    <div class="navbar-right">
+        <a href="profile.html"><button id="profileButton">Profile</button></a>
+      <button id="bookingButton">Bookings</button>
+      <button id="logoutButton">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search vaccination centers..." />
+    <button id="searchButton">Search</button>
+  </div>
+    <table id="centersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Working Hours</th>
+          <th>Vaccines Available</th>
+          <th>Book Slot (Choose data to view slots)</th>
+        </tr>
+      </thead>
+      <tbody id="centersTableBody"></tbody>
+    </table>
+  </div>
+  <div id="bookingSection" class="sidebar hidden">
+    <h2>Bookings</h2>
+    <ul id="bookingsList"></ul>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script>
+
+  <script type="text/javascript">
+    // Your Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    var database = firebase.database();
+    var centersRef = database.ref("vaccination_centers");
+    var bookingsRef;
+
+    // Check if user is logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is logged in
+        bookingsRef = database.ref("bookings/" + user.uid);
+        loadCenters();
+        loadBookings();
+
+        // Add event listener to logout button
+        var logoutButton = document.getElementById("logoutButton");
+        logoutButton.addEventListener("click", logoutUser);
+
+        // Add event listener to booking button
+        var bookingButton = document.getElementById("bookingButton");
+        var bookingSection = document.getElementById("bookingSection");
+        var bookingSectionButton = document.getElementById("bookingSectionButton");
+        bookingButton.addEventListener("click", function() {
+          bookingSection.classList.remove("hidden");
+        });
+        bookingSectionButton.addEventListener("click", function() {
+          bookingSection.classList.add("hidden");
+        });
+
+        // Add event listener to profile button
+        var profileButton = document.getElementById("profileButton");
+        var profileList = document.getElementById("profileList");
+        profileButton.addEventListener("click", function() {
+          profileList.classList.toggle("hidden");
+        });
+      } else {
+        // User is not logged in
+        window.location.href = 'login.html'; // Redirect to the login page
+      }
+    });
+
+    // Load vaccination centers and populate the table
+    function loadCenters() {
+  var centersTableBody = document.getElementById("centersTableBody");
+  var searchInput = document.getElementById("searchInput");
+  var searchButton = document.getElementById("searchButton");
+  var searchQuery = searchInput.value.toLowerCase().trim();
+  centersTableBody.innerHTML = "";
+
+  centersRef.once("value").then(function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      var centerId = childSnapshot.key;
+      var center = childSnapshot.val();
+
+      // Filter rows based on the search query
+      if (center.name.toLowerCase().includes(searchQuery)) {
+        var row = centersTableBody.insertRow();
+        row.insertCell().textContent = centerId;
+        row.insertCell().textContent = center.name;
+        row.insertCell().textContent = center.location;
+        row.insertCell().textContent = center.working_hours;
+        row.insertCell().textContent = center.slots_left;
+
+        var actionsCell = row.insertCell();
+
+        if (center.slots_left > 0) {
+          var datePicker = document.createElement("input");
+          datePicker.type = "date";
+          datePicker.addEventListener("change", function() {
+            var selectedDate = datePicker.value;
+            if (selectedDate) {
+              updateSlotsLeft(centerId, selectedDate);
+            }
+          });
+          actionsCell.appendChild(datePicker);
+
+          var slotsLeftLabel = document.createElement("span");
+          slotsLeftLabel.id = "slotsLeftLabel_" + centerId;
+          actionsCell.appendChild(slotsLeftLabel);
+
+          var bookButton = document.createElement("button");
+          bookButton.textContent = "Book";
+          bookButton.addEventListener("click", function() {
+            var selectedDate = datePicker.value;
+            if (selectedDate) {
+              bookSlot(centerId, selectedDate);
+            }
+          });
+          actionsCell.appendChild(bookButton);
+        } else {
+          var notAvailableText = document.createElement("span");
+          notAvailableText.textContent = "N/A";
+          actionsCell.appendChild(notAvailableText);
+        }
+      }
+    });
+  });
+}
+
+var searchButton = document.getElementById("searchButton");
+searchButton.addEventListener("click", loadCenters);
+
+
+    // Update the available slots for a selected date
+    function updateSlotsLeft(centerId, selectedDate) {
+      var slotsLeftLabel = document.getElementById("slotsLeftLabel_" + centerId);
+      var currentDate = new Date().toISOString().split('T')[0]; // Get the current date
+
+      if (selectedDate < currentDate) {
+        slotsLeftLabel.textContent = "Please select a valid date";
+        return;
+      }
+
+      var bookingDateRef = database.ref("bookings_dates/" + selectedDate);
+      bookingDateRef.once("value").then(function(snapshot) {
+        var slotsBooked = snapshot.exists() ? snapshot.val().slotsBooked : 0;
+        var slotsLeft = 10 - slotsBooked;
+        slotsLeftLabel.textContent = "Slots Left: " + slotsLeft;
+      });
+    }
+
+    // Book a slot in a vaccination center
+    function bookSlot(centerId, selectedDate) {
+      var centerRef = centersRef.child(centerId);
+      centerRef.child("slots_left").transaction(function(currentSlots) {
+        if (currentSlots > 0) {
+          return currentSlots - 1;
+        }
+        return currentSlots;
+      }, function(error, committed, snapshot) {
+        if (error) {
+          console.error("Error booking slot:", error);
+        } else if (committed) {
+          var bookingId = bookingsRef.push().key;
+          var bookingData = {
+            centerId: centerId,
+            dateBooked: selectedDate
+          };
+          bookingsRef.child(bookingId).set(bookingData);
+          var bookingDateRef = database.ref("bookings_dates/" + selectedDate);
+          bookingDateRef.transaction(function(currentData) {
+            return {
+              slotsBooked: (currentData ? currentData.slotsBooked : 0) + 1
+            };
+          });
+          loadBookings();
+          loadCenters();
+        }
+      });
+    }
+
+    // Cancel a booking and update slot availability
+    function cancelBooking(bookingId, centerId, bookingDate) {
+      var centerRef = centersRef.child(centerId);
+      var bookingDateRef = database.ref("bookings_dates/" + bookingDate);
+
+      // Update the slots count for the specific booking date
+      bookingDateRef.transaction(function(currentData) {
+        var slotsBooked = currentData ? currentData.slotsBooked : 0;
+        var newSlotsBooked = slotsBooked - 1;
+        if (newSlotsBooked >= 0 && newSlotsBooked <= 10) {
+          return { slotsBooked: newSlotsBooked };
+        }
+        return currentData; // Return the currentData without updating if the slots count goes below 0 or above 10
+      }, function(error, committed, snapshot) {
+        if (committed) {
+          // Update the slots_left count in the respective center
+          centerRef.child("slots_left").transaction(function(currentSlots) {
+            return currentSlots + 1;
+          }, function(error, committed, snapshot) {
+            if (error) {
+              console.error("Error canceling booking:", error);
+            } else if (committed) {
+              bookingsRef.child(bookingId).remove();
+              loadBookings();
+              loadCenters(); // Reload centers' data to update slot availability
+            }
+          });
+        }
+      });
+    }
+
+    // Load bookings and populate the bookings list
+    function loadBookings() {
+      var bookingsList = document.getElementById("bookingsList");
+      bookingsList.innerHTML = "";
+
+      bookingsRef.once("value").then(function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+          var bookingId = childSnapshot.key;
+          var booking = childSnapshot.val();
+
+          var listItem = document.createElement("li");
+          listItem.textContent = "Booking ID: " + bookingId + ", Center ID: " + booking.centerId + ", Date: " + booking.dateBooked;
+
+          var cancelButton = document.createElement("button");
+          cancelButton.textContent = "Cancel";
+          cancelButton.addEventListener("click", function() {
+            cancelBooking(bookingId, booking.centerId, booking.dateBooked);
+          });
+
+          listItem.appendChild(cancelButton);
+          bookingsList.appendChild(listItem);
+        });
+      });
+    }
+    // Add event listener to profile button
+var profileButton = document.getElementById("profileButton");
+var profileSection = document.getElementById("profileSection");
+var profileUpdateButton = document.getElementById("profileUpdateButton");
+var profileNameInput = document.getElementById("profileNameInput");
+var profileAgeInput = document.getElementById("profileAgeInput");
+var profilePhoneInput = document.getElementById("profilePhoneInput");
+var profileAadharInput = document.getElementById("profileAadharInput");
+var profileAddressInput = document.getElementById("profileAddressInput");
+
+profileButton.addEventListener("click", function() {
+  profileSection.classList.toggle("hidden");
+  loadUserProfile(); // Load user profile when the profile section is shown
+});
+
+profileUpdateButton.addEventListener("click", function() {
+  updateProfile();
+});
+
+// Load user profile
+function loadUserProfile() {
+  var user = firebase.auth().currentUser;
+  if (user) {
+    var userProfileRef = database.ref("users/" + user.uid);
+    userProfileRef.once("value").then(function(snapshot) {
+      var userProfile = snapshot.val();
+      if (userProfile) {
+        profileNameInput.value = userProfile.name || "";
+        profileAgeInput.value = userProfile.age || "";
+        profilePhoneInput.value = userProfile.phone || "";
+        profileAadharInput.value = userProfile.aadhar || "";
+        profileAddressInput.value = userProfile.address || "";
+      }
+    });
+  }
+}
+
+// Update user profile
+function updateProfile() {
+  var user = firebase.auth().currentUser;
+  if (user) {
+    var userProfileRef = database.ref("users/" + user.uid);
+    var profileData = {
+      name: profileNameInput.value.trim(),
+      age: parseInt(profileAgeInput.value.trim()),
+      phone: profilePhoneInput.value.trim(),
+      aadhar: profileAadharInput.value.trim(),
+      address: profileAddressInput.value.trim()
+    };
+    userProfileRef.update(profileData)
+      .then(function() {
+        console.log("Profile updated successfully!");
+      })
+      .catch(function(error) {
+        console.error("Error updating profile:", error);
+      });
+  }
+}
+
+  </script>
+</body>
+
+</html>

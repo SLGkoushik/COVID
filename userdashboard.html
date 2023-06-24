@@ -1,0 +1,226 @@
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="usdash.css">
+  <title>Vaccination Center Booking</title>
+</head>
+
+<body>
+  <div class="navbar">
+    <h2>Vaccination Center Booking</h2>
+    <div class="navbar-right">
+      <button id="profileButton">Profile</button>
+      <button id="bookingButton">Bookings</button>
+      <button id="logoutButton">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <table id="centersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Working Hours</th>
+          <th>Slots Left</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="centersTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="sidebar">
+    <h2>Profile</h2>
+    <ul id="profileList">
+      <li><strong>Name:</strong> John Doe</li>
+      <li><strong>Age:</strong> 30</li>
+      <li><strong>Aadhar Number:</strong> 1234567890</li>
+      <li><strong>Phone Number:</strong> 9876543210</li>
+      <li><strong>Address:</strong> 123 Street, City</li>
+    </ul>
+    <button id="bookingSectionButton">Booking</button>
+  </div>
+
+  <div id="bookingSection" class="sidebar hidden">
+    <h2>Bookings</h2>
+    <ul id="bookingsList"></ul>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script>
+
+  <script type="text/javascript">
+    // Your Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    var database = firebase.database();
+    var centersRef = database.ref("vaccination_centers");
+    var bookingsRef;
+
+    // Check if user is logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is logged in
+        bookingsRef = database.ref("bookings/" + user.uid);
+        loadCenters();
+        loadBookings();
+
+        // Add event listener to logout button
+        var logoutButton = document.getElementById("logoutButton");
+        logoutButton.addEventListener("click", logoutUser);
+
+        // Add event listener to booking button
+        var bookingButton = document.getElementById("bookingButton");
+        var bookingSection = document.getElementById("bookingSection");
+        var bookingSectionButton = document.getElementById("bookingSectionButton");
+        bookingButton.addEventListener("click", function() {
+          bookingSection.classList.remove("hidden");
+        });
+        bookingSectionButton.addEventListener("click", function() {
+          bookingSection.classList.add("hidden");
+        });
+
+        // Add event listener to profile button
+        var profileButton = document.getElementById("profileButton");
+        var profileList = document.getElementById("profileList");
+        profileButton.addEventListener("click", function() {
+          profileList.classList.toggle("hidden");
+        });
+      } else {
+        // User is not logged in
+        window.location.href = 'login.html'; // Redirect to the login page
+      }
+    });
+
+    // Load vaccination centers and populate the table
+    function loadCenters() {
+      var centersTableBody = document.getElementById("centersTableBody");
+      centersTableBody.innerHTML = "";
+
+      centersRef.once("value").then(function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+          var centerId = childSnapshot.key;
+          var center = childSnapshot.val();
+
+          var row = centersTableBody.insertRow();
+          row.insertCell().textContent = centerId;
+          row.insertCell().textContent = center.name;
+          row.insertCell().textContent = center.location;
+          row.insertCell().textContent = center.working_hours;
+          row.insertCell().textContent = center.slots_left;
+
+          var actionsCell = row.insertCell();
+          var bookButton = document.createElement("button");
+
+          if (center.slots_left > 0) {
+            bookButton.textContent = "Book";
+            bookButton.addEventListener("click", function() {
+              bookSlot(centerId);
+            });
+          } else {
+            bookButton.textContent = "N/A";
+            bookButton.disabled = true;
+          }
+
+          actionsCell.appendChild(bookButton);
+        });
+      });
+    }
+
+    // Book a slot in a vaccination center
+    function bookSlot(centerId) {
+      var centerRef = centersRef.child(centerId);
+      centerRef.child("slots_left").transaction(function(currentSlots) {
+        if (currentSlots > 0) {
+          return currentSlots - 1;
+        }
+        return currentSlots;
+      }, function(error, committed, snapshot) {
+        if (error) {
+          console.error("Error booking slot:", error);
+        } else if (committed) {
+          var bookingId = bookingsRef.push().key;
+          var bookingData = {
+            centerId: centerId
+          };
+          bookingsRef.child(bookingId).set(bookingData);
+          loadBookings();
+          loadCenters();
+        }
+      });
+    }
+
+    // Cancel a booking
+    function cancelBooking(bookingId, centerId) {
+      var centerRef = centersRef.child(centerId);
+      centerRef.child("slots_left").transaction(function(currentSlots) {
+        return currentSlots + 1;
+      }, function(error, committed, snapshot) {
+        if (error) {
+          console.error("Error canceling booking:", error);
+        } else if (committed) {
+          bookingsRef.child(bookingId).remove();
+          loadBookings();
+          loadCenters();
+        }
+      });
+    }
+
+    // Load bookings and populate the bookings list
+    function loadBookings() {
+      var bookingsList = document.getElementById("bookingsList");
+      bookingsList.innerHTML = "";
+
+      bookingsRef.once("value").then(function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+          var bookingId = childSnapshot.key;
+          var booking = childSnapshot.val();
+
+          var listItem = document.createElement("li");
+          listItem.textContent = "Booking ID: " + bookingId + ", Center ID: " + booking.centerId;
+
+          var cancelButton = document.createElement("button");
+          cancelButton.textContent = "Cancel";
+          cancelButton.addEventListener("click", function() {
+            cancelBooking(bookingId, booking.centerId);
+          });
+
+          listItem.appendChild(cancelButton);
+          bookingsList.appendChild(listItem);
+        });
+      });
+    }
+
+    // Logout the user
+    function logoutUser() {
+      firebase.auth().signOut().then(function() {
+        window.location.href = 'login.html'; // Redirect to the login page
+      }).catch(function(error) {
+        console.error("Error logging out:", error);
+      });
+    }
+  </script>
+</body>
+
+</html>
+

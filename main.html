@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>Covid Vaccination Booking</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="title">Covid Vaccination Booking</div>
+    <div class="buttons">
+      <button id="signupButton">Signup</button>
+      <button id="loginButton">Login</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+      <div class="text-container">
+        <h3>Welcome</h3>
+        <p>"India is set to defeat Covid-19. Every Indian is making it possible."</p>
+        <p>- PM Narendra Modi</p>
+        <p>Search Your Nearest Vaccination Center</p>
+           <p> Get a preview list of the nearest centers and check availability of vaccination slots</p>
+            
+            <p>Login to book your slot</p>
+      </div>
+      <div class="image-container">
+        <img src="https://www.cowin.gov.in/assets/images/independance.svg">
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    document.getElementById('signupButton').addEventListener('click', function() {
+      // Redirect to signup page
+      window.location.href = 'signup.html';
+    });
+
+    document.getElementById('loginButton').addEventListener('click', function() {
+      // Redirect to login page
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

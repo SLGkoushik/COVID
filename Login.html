@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Covid Vaccination Booking</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+  <h1>Covid Vaccination Booking</h1>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" required>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="errorMessage" style="display: none; color: red;"></p>
+  <button id="signupButton" style="display: none;">Signup</button>
+  </div>
+
+  <!-- Initialize Firebase and include the Firebase configuration -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+  <script type="text/javascript">
+
+    // Your Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+  <script src="Login.js"></script>
+  
+</body>
+</html>
+

@@ -1,0 +1,393 @@
+/* CSS for the navbar */
+.navbar {
+  background-color: #f2f2f2;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.navbar-right button {
+  margin-left: 10px;
+}
+
+/* CSS for the main section */
+.main {
+  margin: 20px;
+}
+
+/* CSS for the vaccination centers table */
+#centersTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#centersTable th,
+#centersTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#centersTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+#centersTable tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* CSS for the booking section */
+.sidebar {
+  width: 300px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+#bookingsList {
+  list-style: none;
+  padding: 0;
+}
+
+#bookingsList li {
+  margin-bottom: 5px;
+}
+
+/* CSS for the buttons */
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* CSS for the date input */
+input[type="date"] {
+  width: 70%;
+  padding: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* CSS for hiding elements */
+/* CSS for the booking section */
+.booking-section {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.booking-section h2 {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.booking-section .form-group {
+  margin-bottom: 15px;
+}
+
+.booking-section .form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.booking-section .form-group input[type="text"],
+.booking-section .form-group input[type="email"],
+.booking-section .form-group input[type="tel"],
+.booking-section .form-group select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.booking-section .form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: url("select-arrow.png") no-repeat right center;
+  background-size: 16px;
+  padding-right: 30px;
+}
+
+.booking-section .form-group button {
+  background-color: #2c3e50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.booking-section .form-group button:hover {
+  background-color: #1a252f;
+}
+
+.booking-section .form-group .date-input {
+  display: flex;
+  align-items: center;
+}
+
+.booking-section .form-group .date-input label {
+  margin-right: 10px;
+}
+
+.booking-section .form-group .date-input input[type="date"] {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.booking-section .form-group .time-input {
+  display: flex;
+  align-items: center;
+}
+
+.booking-section .form-group .time-input label {
+  margin-right: 10px;
+}
+
+.booking-section .form-group .time-input input[type="time"] {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.booking-section .form-group .checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.booking-section .form-group .checkbox-label input[type="checkbox"] {
+  margin-right: 8px;
+}
+.booking-section {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%; /* Set the width to 100% */
+  max-width: 600px; /* Set a maximum width for the section */
+  margin-left: auto; /* Center the section horizontally */
+  margin-right: auto;
+}
+.booking-section {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 70%; /* Adjust the width as per your preference */
+  float: right; /* Add float property to move it to the left side */
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+}
+
+.navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.navbar-right button {
+  margin-left: 10px;
+}
+
+.main {
+  background-color: #fff;
+  padding: 20px;
+}
+
+#bookingSection {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+#bookingSection h2 {
+  margin-top: 0;
+}
+
+#bookingsList {
+  list-style: none;
+  padding: 0;
+}
+
+#bookingsList li {
+  margin-bottom: 10px;
+}
+#bookingSection {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#bookingsList li button {
+  margin-left: 10px;
+}
+/* CSS for booking list */
+#bookingsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#bookingsList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+#bookingsList li button {
+  margin-left: 10px;
+}
+
+#bookingsList li:last-child {
+  border-bottom: none;
+}
+/* CSS for booking list */
+#bookingsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#bookingsList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+#bookingsList li .booking-info {
+  flex: 1;
+  margin-right: 10px;
+}
+
+#bookingsList li .booking-info h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#bookingsList li .booking-info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+#bookingsList li button {
+  margin-left: 10px;
+}
+
+#bookingsList li:last-child {
+  border-bottom: none;
+}
+#profileSection {
+  display: none;
+}
+#profileSection ul li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#profileSection ul li span {
+  margin-right: 10px;
+  width: 120px;
+}
+
+#profileSection textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+#profileSection button {
+  padding: 5px 10px;
+}
+#centersTable {
+  height: 300px; /* Adjust the height as needed */
+  overflow-y: scroll;
+}
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#searchInput {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex: 1;
+  margin-right: 1%;
+}
+
+#searchButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  width: 10%;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
+
+
+

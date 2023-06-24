@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Covid Vaccination Booking</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Login</h1>
+    <form id="loginForm">
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+
+    <p id="errorMessage" style="display: none; color: red;"></p>
+  </div>
+
+  <!-- Initialize Firebase and include the Firebase configuration -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+  <script type="text/javascript">
+
+    // Your Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('loginForm');
+      const errorMessage = document.getElementById('errorMessage');
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = loginForm.email.value;
+        const password = loginForm.password.value;
+
+        // Check the email before authenticating
+        if (email === 'sa@gmail.com') {
+          firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              // Logged in successfully
+              const user = userCredential.user;
+              console.log('Logged in:', user);
+              // Redirect to the admin dashboard page
+              window.location.href = 'admindashboard.html';
+            })
+            .catch((error) => {
+              // Handle login error
+              const errorCode = error.code;
+              const errorMessageText = error.message;
+              console.error('Login error:', errorCode, errorMessageText);
+
+              // Display error message
+              errorMessage.textContent = 'Incorrect email or password. Please try again.';
+              errorMessage.style.display = 'block';
+            });
+        } else {
+          // Display error message for invalid email
+          errorMessage.textContent = 'Invalid email. Please try again.';
+          errorMessage.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

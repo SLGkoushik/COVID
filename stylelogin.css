@@ -1,0 +1,30 @@
+body {
+    background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
+  }
+  
+  header {
+    background-color: #ff5252;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .covid-heading {
+    color: #fff;
+    font-size: 36px;
+    letter-spacing: 2px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  
+  main {
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Rest of the CSS styles for the form, buttons, and error message go here */
+  

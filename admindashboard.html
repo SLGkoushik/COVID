@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="admin.css">
+  <title>Vaccination Center Management</title>
+</head>
+
+<body>
+  <div class="sidebar">
+    <h2>Admin Dashboard</h2>
+    <ul>
+      <li><button onclick="showAddCenterForm()">Add New Vaccination Center</button></li>
+      <li><button onclick="showDeleteCenterForm()">Delete Vaccination Center</button></li>
+      <li><button onclick="showAddSlotsForm()">Add Vaccines/Slots</button></li>
+      <li><button onclick="showBookedUsersForm()">View Booked Users</button></li>
+      <li><button onclick="logout()">Logout</button></li>
+
+    </ul>
+  </div>
+
+  <div class="main">
+    <div id="maindiv">
+        
+        <img src="https://cdn-icons-png.flaticon.com/512/2206/2206368.png" height="200px" width="200px"/>
+        <h1>Welcome to<br>
+             Admin Dashboard</h1>
+    </div>
+        
+    <div id="addCenterForm" style="display: none;">
+      <h2>Add New Vaccination Center</h2>
+      <div class="form">
+        Vaccination Center ID: <input type="text" name="centerId" id="centerId" /><br /><br />
+        Vaccination Center Name: <input type="text" name="centerName" id="centerName" /><br /><br />
+        Location: <input type="text" name="location" id="location" /><br /><br />
+        Working Hours: <input type="text" name="workingHours" id="workingHours" /><br /><br />
+        Number of Slots Left: <input type="number" name="slotsLeft" id="slotsLeft" /><br /><br />
+        <button onclick="addNewCenter()">Add Center</button>
+      </div>
+    </div>
+
+    <div id="deleteCenterForm" style="display: none;">
+      <h2>Delete Vaccination Center</h2>
+      <div class="form">
+        Vaccination Center ID: <input type="text" name="deleteCenterId" id="deleteCenterId" /><br /><br />
+        <button onclick="deleteCenter()">Delete Center</button>
+      </div>
+    </div>
+
+    <div id="addSlotsForm" style="display: none;">
+      <h2>Add Vaccines/Slots</h2>
+      <div class="form">
+        <h3>Available Vaccines:</h3>
+        <ul id="availableSlots"></ul>
+        <button onclick="addSlots()">Add Vaccines</button>
+      </div>
+    </div>
+  
+  <div id="bookedUsersForm" style="display: none;">
+    <h2>View Booked Users</h2>
+    <div class="form">
+      Vaccination Center ID: <input type="text" name="viewCenterId" id="viewCenterId" /><br /><br />
+      <button onclick="viewBookedUsers()">View Users</button>
+      <h3>Booked Users:</h3>
+      <ul id="bookedUsersList"></ul>
+    </div>
+  </div>
+</div>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script>
+
+  <script type="text/javascript">
+    // Your Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDHiYQQedLlMyOT9uwhpf6m-Qc5YLkfuIk",
+    authDomain: "covidapp-9f88d.firebaseapp.com",
+    databaseURL: "https://covidapp-9f88d-default-rtdb.firebaseio.com",
+    projectId: "covidapp-9f88d",
+    storageBucket: "covidapp-9f88d.appspot.com",
+    messagingSenderId: "265193378861",
+    appId: "1:265193378861:web:a24b3bf91569607d2a14a4",
+    measurementId: "G-60SNE3CDR0"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    var database = firebase.database();
+    var centersRef = database.ref("vaccination_centers");
+
+    // Display add center form
+    function showAddCenterForm() {
+      document.getElementById("addCenterForm").style.display = "block";
+      document.getElementById("deleteCenterForm").style.display = "none";
+      document.getElementById("addSlotsForm").style.display = "none";
+      document.getElementById("bookedUsersForm").style.display = "none";
+      document.getElementById("maindiv").style.display = "none"
+    }
+
+  // Add new vaccination center
+function addNewCenter() {
+  var centerId = document.getElementById("centerId").value;
+  var centerName = document.getElementById("centerName").value;
+  var location = document.getElementById("location").value;
+  var workingHours = document.getElementById("workingHours").value;
+  var slotsLeft = document.getElementById("slotsLeft").value;
+
+  // Validate slotsLeft
+  if (isNaN(slotsLeft) || slotsLeft <= 0 || slotsLeft > 100) {
+    alert("Invalid number of slots. The number of slots should be between 1 and 100.");
+    return;
+  }
+
+  var newCenterRef = centersRef.child(centerId);
+  newCenterRef.set({
+    name: centerName,
+    location: location,
+    working_hours: workingHours,
+    slots_left: slotsLeft,
+  });
+
+  alert("New center added successfully!");
+
+  document.getElementById("centerId").value = "";
+  document.getElementById("centerName").value = "";
+  document.getElementById("location").value = "";
+  document.getElementById("workingHours").value = "";
+  document.getElementById("slotsLeft").value = "";
+  var bookingsRef = database.ref("bookings");
+  bookingsRef.once("value")
+    .then(function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        var booking = childSnapshot.val();
+        var centerId = booking.centerId;
+        var dateBooked = booking.dateBooked;
+
+        if (centerId === centerId) {
+          // Display the booking data or perform any desired actions
+          console.log("Booking found - Center ID: " + centerId + ", Date Booked: " + dateBooked);
+        }
+      });
+    });
+}
+
+
+    // Display delete center form
+    function showDeleteCenterForm() {
+      document.getElementById("addCenterForm").style.display = "none";
+      document.getElementById("deleteCenterForm").style.display = "block";
+      document.getElementById("addSlotsForm").style.display = "none";
+      document.getElementById("bookedUsersForm").style.display = "none";
+      document.getElementById("maindiv").style.display = "none"
+    }
+
+    // Delete vaccination center
+    function deleteCenter() {
+      var centerId = document.getElementById("deleteCenterId").value;
+      var centerRef = centersRef.child(centerId);
+
+      centerRef.remove()
+        .then(function () {
+          alert("Center deleted successfully!");
+          document.getElementById("deleteCenterId").value = "";
+        })
+        .catch(function (error) {
+          console.error("Error deleting center:", error);
+        });
+    }
+
+    // Display add slots form
+    function showAddSlotsForm() {
+      document.getElementById("addCenterForm").style.display = "none";
+      document.getElementById("deleteCenterForm").style.display = "none";
+      document.getElementById("addSlotsForm").style.display = "block";
+      document.getElementById("maindiv").style.display = "none"
+      document.getElementById("bookedUsersForm").style.display = "none";
+
+      // Load available slots
+      var availableSlotsList = document.getElementById("availableSlots");
+      availableSlotsList.innerHTML = "";
+
+      centersRef.once("value")
+        .then(function (snapshot) {
+          snapshot.forEach(function (childSnapshot) {
+            var center = childSnapshot.val();
+            var slotsLeft = center.slots_left;
+
+            var li = document.createElement("li");
+            li.textContent = "Center ID: " + childSnapshot.key + ", Center Name: " + center.name + ", Slots Left: " + slotsLeft;
+            availableSlotsList.appendChild(li);
+          });
+        });
+    }
+
+    // Add slots to a vaccination center
+    function addSlots() {
+      var slotsToAdd = parseInt(prompt("Enter the number of slots to add:"));
+
+      if (isNaN(slotsToAdd) || slotsToAdd <= 0) {
+        alert("Invalid number of slots.");
+        return;
+      }
+
+      var selectedCenterId = prompt("Enter the ID of the vaccination center to add slots:");
+
+      var centerRef = centersRef.child(selectedCenterId);
+      centerRef.child("slots_left").transaction(function (currentSlots) {
+        if (currentSlots === null) {
+          return slotsToAdd;
+        } else {
+          var totalSlots = currentSlots + slotsToAdd;
+          if (totalSlots <= 100) {
+            return totalSlots;
+          } else {
+            alert("The total number of Vaccines cannot exceed 100.");
+            return;
+          }
+        }
+      }, function (error, committed, snapshot) {
+        if (error) {
+          console.error("Error adding vaccines:", error);
+        } else if (!committed) {
+          console.log("vaccines addition aborted.");
+        } else {
+          alert("Vaccines added successfully!");
+        }
+      });
+    }
+
+    function showBookedUsersForm() {
+  document.getElementById("addCenterForm").style.display = "none";
+  document.getElementById("deleteCenterForm").style.display = "none";
+  document.getElementById("addSlotsForm").style.display = "none";
+  document.getElementById("bookedUsersForm").style.display = "block";
+  document.getElementById("maindiv").style.display = "none"
+}
+
+// View booked users
+function viewBookedUsers() {
+  var centerId = document.getElementById("viewCenterId").value;
+  var bookingsRef = database.ref("bookings");
+
+  bookingsRef.orderByChild("centerId").equalTo(centerId).once("value")
+    .then(function (snapshot) {
+      var bookedUsersList = document.getElementById("bookedUsersList");
+      bookedUsersList.innerHTML = "";
+
+      snapshot.forEach(function (childSnapshot) {
+        var booking = childSnapshot.val();
+        var dateBooked = booking.dateBooked;
+
+        var li = document.createElement("li");
+        li.textContent = "User ID: " + childSnapshot.key + ", Date Booked: " + dateBooked;
+        bookedUsersList.appendChild(li);
+      });
+    });
+}
+function logout() {
+      // Redirect to adminlogin.html
+      window.location.href = "adminlogin.html";
+    }
+
+  </script>
+
+</body>
+
+</html>
