@@ -23,7 +23,7 @@
     <div class="search-container">
     <input type="text" id="searchInput" placeholder="Search vaccination centers..." />
     <button id="searchButton">Search</button>
-  </div>
+   </div>
     <table id="centersTable">
       <thead>
         <tr>
@@ -83,6 +83,12 @@
         var bookingButton = document.getElementById("bookingButton");
         var bookingSection = document.getElementById("bookingSection");
         var bookingSectionButton = document.getElementById("bookingSectionButton");
+        var bookingButton = document.getElementById("bookingButton");
+      var bookingSection = document.getElementById("bookingSection");
+
+      bookingButton.addEventListener("click", function() {
+        bookingSection.classList.remove("hidden");
+        bookingSection.scrollIntoView({ behavior: 'smooth' });});
         bookingButton.addEventListener("click", function() {
           bookingSection.classList.remove("hidden");
         });
