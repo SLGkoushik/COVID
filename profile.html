@@ -205,21 +205,23 @@
       }
     });
 
-    // Load user profile and populate the input fields
     function loadUserProfile() {
-      var userId = firebase.auth().currentUser.uid;
-      var userRef = database.ref("users/" + userId);
+  var userId = firebase.auth().currentUser.uid;
+  var userRef = database.ref("users/" + userId);
 
-      userRef.once("value").then(function(snapshot) {
-        var profile = snapshot.val();
+  userRef.once("value").then(function(snapshot) {
+    var profile = snapshot.val();
 
-        profileNameInput.value = profile.name || "";
-        profileAgeInput.value = profile.age || "";
-        profilePhoneInput.value = profile.phone || "";
-        profileAadharInput.value = profile.aadhar || "";
-        profileAddressInput.value = profile.address || "";
-      });
+    if (profile) {
+      profileNameInput.value = profile.name || "";
+      profileAgeInput.value = profile.age || "";
+      profilePhoneInput.value = profile.phone || "";
+      profileAadharInput.value = profile.aadhar || "";
+      profileAddressInput.value = profile.address || "";
     }
+  });
+}
+
 
     // Update user profile in the database
     function updateProfile() {
