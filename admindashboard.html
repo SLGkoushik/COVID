@@ -243,20 +243,29 @@ function viewBookedUsers() {
   var bookingsRef = database.ref("bookings");
 
   bookingsRef.orderByChild("centerId").equalTo(centerId).once("value")
-    .then(function (snapshot) {
+    .then(function(snapshot) {
       var bookedUsersList = document.getElementById("bookedUsersList");
       bookedUsersList.innerHTML = "";
 
-      snapshot.forEach(function (childSnapshot) {
-        var booking = childSnapshot.val();
-        var dateBooked = booking.dateBooked;
+      if (snapshot.exists()) {
+        snapshot.forEach(function(childSnapshot) {
+          var userId = childSnapshot.key;
 
+          var li = document.createElement("li");
+          li.textContent = "User ID: " + userId;
+          bookedUsersList.appendChild(li);
+        });
+      } else {
         var li = document.createElement("li");
-        li.textContent = "User ID: " + childSnapshot.key + ", Date Booked: " + dateBooked;
+        li.textContent = "No bookings found for this center.";
         bookedUsersList.appendChild(li);
-      });
+      }
+    })
+    .catch(function(error) {
+      console.error("Error retrieving bookings:", error);
     });
 }
+
 function logout() {
       // Redirect to adminlogin.html
       window.location.href = "adminlogin.html";
